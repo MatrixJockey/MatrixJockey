@@ -3,10 +3,10 @@
 <h2>👨‍💻 Software Development Projects:</h2>
 
 - <b>Data Structures and Algorithms Practice (AlgoExpert) </b>
-  - [Praciting DS & Algos in Python] 
+  - [Praticiing DS & Algos in Python] (https://www.algoexpert.io/data-structures)
   
 - <b>Python</b>
-  - [Package Delivery Application (Datastructures and Algorithms Demo)](https://github.com/joshmadakor1/Package-Delivery-Pathfinding-Algorithm)
+  - [Package Delivery Application (Datastructures and Algorithms Demo)](https://github.com/matrix-jockey/)
 
 <h2>Certifications</h2>
   
