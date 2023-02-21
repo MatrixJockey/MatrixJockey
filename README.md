@@ -88,10 +88,8 @@ I am a IT professional pivoting into Data Science field building my version of t
   
 <details>
  <summary><h3>👨‍💻 Kire's Coding Journey</h3></summary>
-   
-  
+  Life is a constant journey of self discovery and along my educational and professional journey, I made the decision to pivot away from an hardware centric focus to a software/data driven direction. As I have continued my career path, I have studied independently as well as making strides to complete my higher education. I have been inspired through the new AI boom and with the latest startups that have emerged to create my own digital future. This is just a summarization of my path to become a digital nomad, while shaping the future for the next generation. 
  
-  
 
 <!--
 **MatrixJockey/MatrixJockey** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
