@@ -11,10 +11,13 @@ I am a IT professional pivoting into Data Science field building my version of t
     <img alt="total stars" title="Total stars on GitHub" src="https://custom-icon-badges.demolab.com/github/stars/MatrixJockey?color=55960c&style=for-the-badge&labelColor=488207&logo=star"/></a>
   <a href="https://github.com/MatrixJockey?tab=followers">
     <img alt="followers" title="Follow me on Github" src="https://custom-icon-badges.demolab.com/github/followers/MatrixJockey?color=236ad3&labelColor=1155ba&style=for-the-badge&logo=person-add&label=Follow&logoColor=white"/></a>
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com/?lines=Paving+the+way;to+a+data+driven+future!;&font=Fira%20Code&center=true&width=380&height=50&duration=4000&pause=1000">
 </p>
-
-
-
+  
+</p>  
+  
 <h2>👨‍💻 Software Development Projects:</h2>
 
 - <b>Data Structures and Algorithms Practice (AlgoExpert) </b>
