@@ -20,10 +20,6 @@ I am an IT professional pivoting into the Data Science field building my version
   
 <h2>👨‍💻 Projects:</h2>
 
-'''<b>Data Structures and Algorithms Practice (AlgoExpert) </b>
-  - Practicing DS & Algos in Python (https://www.algoexpert.io/data-structures)'''
-  
-'''- <b>Python</b>'''
   - 
 
 <h2>Certifications</h2>
