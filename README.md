@@ -48,7 +48,7 @@ I am a IT professional pivoting into Data Science field building my version of t
   
   <p>
   Note:
-  Top languages is only a metric of the languages my public code consists of and doesn't reflect experience or skill level.
+  Top languages are only a metric of the languages my public code consists of and doesn't reflect experience or skill level.
   </p>
   
   <!-- https://github.com/ashutosh00710/github-readme-activity-graph -->
@@ -84,7 +84,7 @@ I am a IT professional pivoting into Data Science field building my version of t
 <details>
  <summary>
    <h3>👨‍💻 Kire's Coding Journey</h3></summary>
-  Life is a constant journey of self discovery and along my educational and professional journey, I made the decision to pivot away from an hardware centric focus to a software/data driven direction. As I have continued my career path, I have studied independently as well as making strides to complete my higher education. I have been inspired through the new AI boom and with the latest startups that have emerged to create my own digital future. This is just a summarization of my path to become a digital nomad, while shaping the future for the next generation. 
+  Life is a constant journey of self-discovery and along my educational and professional journey, I made the decision to pivot away from a hardware-centric focus to a software/data-driven direction. As I have continued my career path, I have studied independently as well as made strides to complete my higher education. I have been inspired by the new AI boom and the latest startups that have emerged to create my own digital future. This is just a summarization of my path to becoming a digital nomad while shaping the future for the next generation. 
  
 
 <!--
@@ -92,7 +92,7 @@ I am a IT professional pivoting into Data Science field building my version of t
 
 Here are some ideas to get you started:
 
-- 🔭 I’m currently working on Data Engineering projects
+- 🔭 I’m currently working on Data Analytics / Data Engineering projects
 - 🌱 I’m currently learning APIs
 - 👯 I’m looking to collaborate on ...
 - 🤔 I’m looking for help with ...
