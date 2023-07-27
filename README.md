@@ -18,12 +18,12 @@ I am a IT professional pivoting into Data Science field building my version of t
   
 </p>  
   
-<h2>👨‍💻 Software Development Projects:</h2>
+<h2>👨‍💻 Projects:</h2>
 
-- <b>Data Structures and Algorithms Practice (AlgoExpert) </b>
+'''- <b>Data Structures and Algorithms Practice (AlgoExpert) </b>
   - Practicing DS & Algos in Python (https://www.algoexpert.io/data-structures)
   
-- <b>Python</b>
+- <b>Python</b>'''
   - 
 
 <h2>Certifications</h2>
