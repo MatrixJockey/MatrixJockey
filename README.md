@@ -2,7 +2,7 @@
 
 **Digital Craftsman (Dev/Data Science Professional)**
 
-I am a IT professional pivoting into Data Science field building my version of the digital future one bit at a time. All coding projects are a reflection on my understanding with the associated programming language. Built from the ground to contextualize concepts as well make unique projects that can be utilized in an associated role. I am passionate about adapting to new technologies as rapidly as possible. I am seeking entry-level or associate roles in software engineering or data engineering. 
+I am an IT professional pivoting into the Data Science field building my version of the digital future one bit at a time. All coding projects are a reflection on my understanding with the associated programming language. Built from the ground to contextualize concepts as well make unique projects that can be utilized in an associated role. I am passionate about adapting to new technologies as rapidly as possible. I am seeking entry-level or associate roles in software engineering or data engineering. 
 
 
 <!-- Social badges section -->
@@ -20,10 +20,10 @@ I am a IT professional pivoting into Data Science field building my version of t
   
 <h2>👨‍💻 Projects:</h2>
 
-'''- <b>Data Structures and Algorithms Practice (AlgoExpert) </b>
-  - Practicing DS & Algos in Python (https://www.algoexpert.io/data-structures)
+'''<b>Data Structures and Algorithms Practice (AlgoExpert) </b>
+  - Practicing DS & Algos in Python (https://www.algoexpert.io/data-structures)'''
   
-- <b>Python</b>'''
+'''- <b>Python</b>'''
   - 
 
 <h2>Certifications</h2>
