@@ -20,7 +20,7 @@ I am an IT professional pivoting into the Data Science field building my version
   
 <h2>👨‍💻 Projects:</h2>
 
-- Progression of Inner City Youth (Data Analytics)
+- 
 - 
 
 <h2>Certifications</h2>
