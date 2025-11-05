@@ -2,7 +2,7 @@
 
 **Digital Craftsman (Dev/Data Science Professional)**
 
-I am an IT professional pivoting into the Data Science field building my version of the digital future one bit at a time. All coding projects are a reflection on my understanding with the associated programming language. Built from the ground to contextualize concepts as well make unique projects that can be utilized in an associated role. I am passionate about adapting to new technologies as rapidly as possible. I am seeking entry-level or associate roles in software engineering or data engineering. 
+I am an IT professional pivoting into the Data Science field, building my version of the digital future one bit at a time. All coding projects are a reflection on my understanding of the associated programming language. Built from the ground up to contextualize concepts as well as make unique projects that can be utilized in an associated role. I am passionate about adapting to new technologies as rapidly as possible. I am seeking entry-level or associate roles in software engineering or data engineering. 
 
 
 <!-- Social badges section -->
@@ -76,12 +76,14 @@ I am an IT professional pivoting into the Data Science field building my version
 </p>
 
 <br>
-  <a href="https://github.com/ashutosh00710/github-readme-activity-graph"><img alt="MatrixJockey's Activity Graph" src="https://github-readme-activity-graph.cyclic.app/graph/?username=MatrixJockey&&show_icons=true&theme=gruvbox" /></a>
+  <a href="https://github.com/ashutosh00710/github-readme-activity-graph"><img alt="MatrixJockey's Activity Graph" src="https://github-readme-activity-graph.cyclic.app/graph/?username=MatrixJockey&show_icons=true&theme=gruvbox" /></a>
+
+  
   
 <details>
  <summary>
    <h3>👨‍💻 Kire's Coding Journey</h3></summary>
-  Life is a constant journey of self-discovery and along my educational and professional journey, I made the decision to pivot away from a hardware-centric focus to a software/data-driven direction. As I have continued my career path, I have studied independently as well as made strides to complete my higher education. I have been inspired by the new AI boom and the latest startups that have emerged to create my own digital future. This is just a summarization of my path to becoming a digital nomad while shaping the future for the next generation. 
+  Life is a constant journey of self-discovery, and along my educational and professional journey, I decided to pivot away from a hardware-centric focus to a software/data-driven direction. As I have continued my career path, I have studied independently as well as made strides to complete my higher education. I have been inspired by the new AI boom and the latest startups that have emerged to create my own digital future. This is just a summarization of my path to becoming a digital nomad while shaping the future for the next generation. 
  
 
 <!--
