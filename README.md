@@ -76,7 +76,7 @@ I am an IT professional pivoting into the Data Science field, building my versio
 </p>
 
 <br>
-  <a href="https://github.com/ashutosh00710/github-readme-activity-graph"><img alt="MatrixJockey's Activity Graph" src="https://github-readme-activity-graph.cyclic.app/graph/?username=MatrixJockey&show_icons=true&theme=gruvbox" /></a>
+  <a href="https://github.com/ashutosh00710/github-readme-activity-graph"><img alt="MatrixJockey's Activity Graph" src="https://github-readme-activity-graph.cyclic.app/graph/?username=MatrixJockey&show_icons=true&theme=react-dark" /></a>
 
   
   
@@ -96,7 +96,7 @@ Here are some ideas to get you started:
 - 👯 I’m looking to collaborate on ...
 - 🤔 I’m looking for help with ...
 - 💬 Ask me about ...
-- 📫 How to reach me: I can be reached via Linkedin 
+- 📫 How to reach me: I can be reached via LinkedIn 
 - 😄 Pronouns: He/Him
 - ⚡ Fun fact: Cyberpunk is my favorite genre of entertainment and reading material
 -->
