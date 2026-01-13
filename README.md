@@ -76,7 +76,7 @@ I am an IT professional pivoting into the Data Science field, building my versio
 </p>
 
 <br>
-  <a href="https://github-readme-activity-graph.vercel.app/graph?username=Ashutosh00710&theme=react-dark"><img alt="MatrixJockey's Activity Graph" src="https://github-readme-activity-graph.cyclic.app/graph/?username=MatrixJockey&show_icons=true&theme=react-dark" /></a>
+  <a href="https://github-readme-activity-graph.vercel.app/graph?username=MatrixJockey&theme=react-dark"><img alt="MatrixJockey's Activity Graph" src="https://github-readme-activity-graph.cyclic.app/graph/?username=MatrixJockey&show_icons=true&theme=react-dark" /></a>
 
   
   
