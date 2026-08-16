@@ -1,0 +1,475 @@
+#!/bin/bash
+
+# The DJ.
+#
+# Reads the deck, the crate, and the room, asks an agent what should go on
+# next, and prints the answer as one JSON object on stdout. It never touches
+# cliamp itself: it decides, the shell plugin applies. That split is the point
+# — the model returns intentions from a fixed vocabulary, and the thing that
+# holds the socket is the thing that decides whether an intention is one it
+# recognizes.
+#
+# Output contract (always valid JSON, always exit 0):
+#
+#   {"ok":true,"source":"agent","say":"...","reason":"...","playing":"...",
+#    "moves":[{"cmd":"load","arg":"Late Night"},{"cmd":"play"}]}
+#   {"ok":false,"error":"..."}
+#
+# Usage:
+#   dj-amp-brain --reason handoff|deck-empty|request|manual
+#                [--request TEXT] [--vibe TEXT] [--crate MODE]
+#                [--agent NAME] [--recent TEXT]
+
+# No `set -e`: half the work here is commands that are allowed to fail (no
+# agent installed, no playlists, no history). Failures are checked where they
+# matter, and every exit path prints JSON.
+set -uo pipefail
+
+emit_error() {
+  if command -v jq >/dev/null 2>&1; then
+    jq -n --arg e "$1" '{ok:false,error:$e}'
+  else
+    printf '{"ok":false,"error":"%s"}\n' "${1//\"/\'}"
+  fi
+  exit 0
+}
+
+# Before the dependency checks, so `--help` answers on a machine that has
+# neither jq nor cliamp yet.
+if [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
+  cat <<'USAGE'
+Usage: dj-amp-brain --reason handoff|deck-empty|request|manual
+                    [--request TEXT] [--vibe TEXT] [--crate MODE]
+                    [--agent NAME] [--recent TEXT]
+
+Prints one JSON object describing what should happen on the deck next.
+Applies nothing itself; the DJ Amp shell plugin is what applies it.
+
+Environment:
+  DJ_AMP_AGENT       agent CLI to ask, overriding `omarchy default agent`
+  DJ_AMP_AGENT_CMD   full command to ask instead; the prompt is appended
+  DJ_AMP_TIMEOUT     seconds to wait for an answer (default 45)
+  DJ_AMP_PRIVATE=1   send only the clock and the crate, no foreground app
+USAGE
+  exit 0
+fi
+
+command -v jq >/dev/null 2>&1 || emit_error "DJ Amp needs jq installed."
+command -v cliamp >/dev/null 2>&1 || emit_error "cliamp is not installed."
+
+reason="manual"
+request=""
+vibe=""
+crate="Playlists + search"
+agent="auto"
+recent=""
+
+while (($# > 0)); do
+  case "$1" in
+  --reason) reason="${2-}"; shift 2 ;;
+  --request) request="${2-}"; shift 2 ;;
+  --vibe) vibe="${2-}"; shift 2 ;;
+  --crate) crate="${2-}"; shift 2 ;;
+  --agent) agent="${2-}"; shift 2 ;;
+  --recent) recent="${2-}"; shift 2 ;;
+  *) shift ;;
+  esac
+done
+
+case "$crate" in
+"Playlists") may_load=true; may_search=false ;;
+"Search only") may_load=false; may_search=true ;;
+*) may_load=true; may_search=true ;;
+esac
+
+# ------------------------------------------------------------------ the deck
+
+status_json=$(cliamp status --json 2>/dev/null)
+if [[ -z $status_json ]] || ! jq -e '.ok == true' <<<"$status_json" >/dev/null 2>&1; then
+  emit_error "cliamp is not running."
+fi
+
+now_title=$(jq -r '.track.title // ""' <<<"$status_json")
+now_artist=$(jq -r '.track.artist // ""' <<<"$status_json")
+now_playlist=$(jq -r '.playlist // ""' <<<"$status_json")
+now_state=$(jq -r '.state // "stopped"' <<<"$status_json")
+now_index=$(jq -r '.index // 0' <<<"$status_json")
+now_total=$(jq -r '.total // 0' <<<"$status_json")
+
+# ----------------------------------------------------------------- the crate
+#
+# `playlist list` pads names to a common width and appends the track count.
+# Strip both back off to get the names cliamp's `load` will actually accept.
+mapfile -t playlists < <(
+  cliamp playlist list 2>/dev/null |
+    sed -E 's/^[[:space:]]+//; s/[[:space:]]+[0-9]+ tracks[[:space:]]*$//' |
+    grep -v -e '^No playlists found\.$' -e '^$'
+)
+
+if ((${#playlists[@]} > 0)); then
+  playlists_json=$(printf '%s\n' "${playlists[@]}" | jq -R . | jq -s .)
+else
+  playlists_json='[]'
+fi
+
+history_json=$(cliamp history --json --limit 15 2>/dev/null)
+jq -e 'type == "array"' <<<"$history_json" >/dev/null 2>&1 || history_json='[]'
+
+# ------------------------------------------------------------------ the room
+
+hour=$(date '+%-H')
+clock=$(date '+%A %H:%M')
+
+if ((hour >= 5 && hour < 11)); then
+  part_of_day="morning"
+  day_words="morning wake coffee sunrise bright upbeat energy run start"
+elif ((hour >= 11 && hour < 17)); then
+  part_of_day="afternoon"
+  day_words="focus work deep study instrumental concentration day flow"
+elif ((hour >= 17 && hour < 22)); then
+  part_of_day="evening"
+  day_words="evening dinner groove funk soul disco sunset warm"
+else
+  part_of_day="night"
+  day_words="night late ambient chill lofi sleep downtempo dark quiet"
+fi
+
+# The foreground app, by class only — never the window title, which is where
+# file names, ticket numbers, and page titles live. DJ_AMP_PRIVATE=1 drops
+# even this, leaving the DJ with nothing but the clock and the crate.
+foreground_app=""
+if [[ ${DJ_AMP_PRIVATE:-0} != 1 ]] && command -v hyprctl >/dev/null 2>&1; then
+  foreground_app=$(hyprctl activewindow -j 2>/dev/null | jq -r '.class // ""' 2>/dev/null)
+fi
+
+# --------------------------------------------------------------- ask an agent
+
+resolve_agent() {
+  local name="$1"
+  [[ $name == "off" ]] && return 1
+  if [[ $name == "auto" ]]; then
+    name="${DJ_AMP_AGENT:-}"
+    [[ -z $name ]] && name=$(omarchy-default-agent 2>/dev/null | head -1)
+    [[ -z $name ]] && return 1
+  fi
+  command -v "$name" >/dev/null 2>&1 || return 1
+  printf '%s' "$name"
+}
+
+# One-shot, print-to-stdout invocation per CLI, one argv element per line.
+# DJ_AMP_AGENT_CMD overrides the lot: set it to any command that takes the
+# prompt as its last argument and prints the answer, and that is what runs.
+agent_argv() {
+  local name="$1" prompt="$2"
+  if [[ -n ${DJ_AMP_AGENT_CMD:-} ]]; then
+    # Word-split deliberately: the variable is a command line, not a path.
+    # shellcheck disable=SC2206
+    local custom=(${DJ_AMP_AGENT_CMD})
+    printf '%s\n' "${custom[@]}" "$prompt"
+    return 0
+  fi
+  case "$name" in
+  claude) printf '%s\n' claude -p "$prompt" ;;
+  codex) printf '%s\n' codex exec "$prompt" ;;
+  opencode) printf '%s\n' opencode run "$prompt" ;;
+  crush) printf '%s\n' crush run "$prompt" ;;
+  gemini) printf '%s\n' gemini -p "$prompt" ;;
+  pi | omp | grok | copilot) printf '%s\n' "$name" -p "$prompt" ;;
+  *) return 1 ;;
+  esac
+}
+
+build_prompt() {
+  local crate_rule
+  if $may_load && $may_search; then
+    crate_rule='You may load any playlist listed below, and you may use "search" with a query to pull a track off the network when nothing in the crate fits.'
+  elif $may_load; then
+    crate_rule='You may ONLY use playlists listed below. Do not use the "search" move at all.'
+  else
+    crate_rule='Prefer the "search" move with a query. Do not load playlists.'
+  fi
+
+  cat <<PROMPT
+You are the DJ for a listener running cliamp, a terminal music player. Decide
+what happens next on the deck and answer with JSON only.
+
+WHY YOU ARE BEING ASKED: ${reason}
+$([[ -n $request ]] && printf 'THE LISTENER JUST ASKED FOR: %s' "$request")
+$([[ -n $vibe ]] && printf 'STANDING BRIEF: %s' "$vibe")
+
+RIGHT NOW
+  Clock: ${clock} (${part_of_day})
+  State: ${now_state}
+  Track: ${now_title:-(nothing)}${now_artist:+ — $now_artist}
+  Playlist: ${now_playlist:-(none)} (track ${now_index} of ${now_total})
+$([[ -n $foreground_app ]] && printf '  Foreground app: %s' "$foreground_app")
+
+PLAYLISTS IN THE CRATE
+$(jq -r 'if length == 0 then "  (none)" else .[] | "  - " + . end' <<<"$playlists_json")
+
+RECENTLY PLAYED (newest first)
+$(jq -r 'if length == 0 then "  (nothing yet)" else .[] | "  - " + (.title // "?") + (if .artist then " — " + .artist else "" end) end' <<<"$history_json")
+
+ALREADY CALLED BY YOU THIS SESSION
+$(if [[ -n $recent ]]; then printf '%s\n' "$recent" | sed 's/^/  - /'; else printf '  (nothing yet)'; fi)
+
+RULES
+  ${crate_rule}
+  Playlist names must match one from the crate above EXACTLY, character for character.
+  Do not repeat something from the recently-played list unless the listener asked for it.
+  If the current playlist still has tracks left and nothing is wrong, it is fine
+  to leave the deck alone: return an empty "moves" list and say why.
+
+MOVES YOU MAY USE
+  {"cmd":"load","arg":"<exact playlist name>"}   load a playlist
+  {"cmd":"search","arg":"<artist - title>"}      find and play one track
+  {"cmd":"queue","arg":"<absolute file path>"}   queue a local file
+  {"cmd":"play"} {"cmd":"pause"} {"cmd":"next"} {"cmd":"prev"} {"cmd":"stop"}
+  {"cmd":"volume","arg":"-3"}                    volume in dB, -30 to +6
+  {"cmd":"shuffle","arg":"on|off"}               {"cmd":"repeat","arg":"off|all|one"}
+
+ANSWER WITH THIS AND NOTHING ELSE — no prose, no markdown fences:
+{"ok":true,
+ "say":"one short line the listener sees, like a DJ talking over the intro",
+ "reason":"one sentence on why this record, for this room, right now",
+ "playing":"what will be playing after these moves",
+ "moves":[{"cmd":"load","arg":"Late Night"},{"cmd":"shuffle","arg":"on"},{"cmd":"play"}]}
+PROMPT
+}
+
+# Agents like to wrap JSON in prose or fences. Take the first balanced-looking
+# object and let jq be the judge of whether it is really JSON.
+extract_json() {
+  sed -e 's/^```[a-zA-Z]*$//' -e 's/^```$//' |
+    tr -d '\000' |
+    sed -n '/{/,$p' |
+    awk '
+      BEGIN { depth = 0; started = 0 }
+      {
+        line = $0
+        out = ""
+        for (i = 1; i <= length(line); i++) {
+          c = substr(line, i, 1)
+          if (c == "{") { depth++; started = 1 }
+          if (started) out = out c
+          if (c == "}") {
+            depth--
+            if (depth == 0 && started) { print out; exit }
+          }
+        }
+        if (started) print out
+      }'
+}
+
+ask_agent() {
+  local name prompt raw candidate
+  local -a argv=()
+
+  name=$(resolve_agent "$agent") || return 1
+  prompt=$(build_prompt)
+
+  mapfile -t argv < <(agent_argv "$name" "$prompt")
+  ((${#argv[@]} > 0)) || return 1
+
+  # A DJ that takes two minutes to pick a record has already missed the
+  # handoff. stdin is closed so an agent that wants to go interactive gives up
+  # instead of hanging, and stderr is dropped so a spinner never lands in the
+  # answer.
+  raw=$(timeout "${DJ_AMP_TIMEOUT:-45}" "${argv[@]}" </dev/null 2>/dev/null)
+  [[ -z $raw ]] && return 1
+
+  candidate=$(extract_json <<<"$raw")
+  [[ -z $candidate ]] && return 1
+  jq -e 'type == "object"' <<<"$candidate" >/dev/null 2>&1 || return 1
+
+  printf '%s' "$candidate"
+}
+
+# Whatever the agent said, only moves this script recognizes survive, and only
+# playlists that actually exist. A model that invents "Deep Focus Vol. 2"
+# should produce a DJ that says nothing, not a cliamp error in the panel.
+sanitize_plan() {
+  jq -c \
+    --argjson playlists "$playlists_json" \
+    --argjson mayLoad "$may_load" \
+    --argjson maySearch "$may_search" \
+    '
+    def allowed: ["play","pause","toggle","stop","next","prev","load","queue","search","volume","seek","shuffle","repeat","speed","eq"];
+    def needsArg: ["load","queue","search","volume","seek","shuffle","repeat","speed","eq"];
+
+    (.moves // [])
+    | map(select(type == "object"))
+    | map({cmd: (.cmd // "" | tostring | ascii_downcase | sub("^\\s+";"") | sub("\\s+$";"")),
+           arg: (if .arg == null then "" else (.arg | tostring) end)})
+    | map(select(.cmd | IN(allowed[])))
+    | map(select((.cmd | IN(needsArg[]) | not) or (.arg != "")))
+    | map(select(.cmd != "load" or ($mayLoad and (.arg | IN($playlists[])))))
+    | map(select(.cmd != "search" or $maySearch))
+    | .[0:4]
+    '
+}
+
+emit_plan() {
+  jq -n \
+    --arg source "$1" \
+    --arg say "$2" \
+    --arg reason "$3" \
+    --arg playing "$4" \
+    --argjson moves "$5" \
+    '{ok:true, source:$source, say:$say, reason:$reason, playing:$playing, moves:$moves}'
+}
+
+# --------------------------------------------------------- the rule-based DJ
+#
+# What runs when there is no agent, when the agent times out, or when what it
+# said did not survive the sanitizer. It is not clever, but it knows the clock
+# and it knows the crate, and it never leaves the deck silent.
+
+# Score a playlist name by how many of the hour's words it contains.
+score_name() {
+  local name="${1,,}" score=0 word
+  for word in $day_words; do
+    [[ $name == *"$word"* ]] && ((score++))
+  done
+  printf '%s' "$score"
+}
+
+pick_playlist() {
+  local avoid="$1" best_score=-1 name score
+  local -a best=()
+
+  for name in "${playlists[@]+"${playlists[@]}"}"; do
+    [[ $name == "$avoid" ]] && continue
+    score=$(score_name "$name")
+    if ((score > best_score)); then
+      best_score=$score
+      best=("$name")
+    elif ((score == best_score)); then
+      best+=("$name")
+    fi
+  done
+
+  ((${#best[@]} == 0)) && return 1
+  printf '%s\n' "${best[@]}" | shuf -n 1
+}
+
+# Match a request against the crate: every word of the request that appears in
+# a playlist name is a point. Nothing scoring at all means no match.
+match_playlist() {
+  local wanted="${1,,}" best="" best_score=0 name lowered score word
+
+  for name in "${playlists[@]+"${playlists[@]}"}"; do
+    lowered="${name,,}"
+    score=0
+    for word in $wanted; do
+      ((${#word} < 3)) && continue
+      [[ $lowered == *"$word"* ]] && ((score++))
+    done
+    if ((score > best_score)); then
+      best_score=$score
+      best="$name"
+    fi
+  done
+
+  [[ -z $best ]] && return 1
+  printf '%s' "$best"
+}
+
+heuristic_plan() {
+  local moves matched next_playlist wanted
+
+  # A request is an instruction first and a mood second. Read the obvious
+  # verbs literally before reaching for the crate.
+  if [[ -n $request ]]; then
+    wanted="${request,,}"
+
+    case "$wanted" in
+    *louder* | *"turn it up"* | *"volume up"*)
+      emit_plan heuristic "Turning it up." "You asked for more." "$now_title" '[{"cmd":"volume","arg":"3"}]'
+      return 0
+      ;;
+    *quieter* | *softer* | *"turn it down"* | *"volume down"*)
+      emit_plan heuristic "Bringing it down." "You asked for less." "$now_title" '[{"cmd":"volume","arg":"-3"}]'
+      return 0
+      ;;
+    *skip* | *next* | *"something else"*)
+      emit_plan heuristic "Next one." "You'd heard enough of that." "" '[{"cmd":"next"}]'
+      return 0
+      ;;
+    *stop* | *silence* | *quiet*)
+      emit_plan heuristic "Killing the music." "You asked for quiet." "" '[{"cmd":"pause"}]'
+      return 0
+      ;;
+    *shuffle*)
+      emit_plan heuristic "Shuffling it." "You asked to mix up the order." "$now_playlist" '[{"cmd":"shuffle","arg":"on"}]'
+      return 0
+      ;;
+    esac
+
+    if $may_load && matched=$(match_playlist "$request"); then
+      moves=$(jq -nc --arg p "$matched" '[{cmd:"load",arg:$p},{cmd:"play"}]')
+      emit_plan heuristic "Putting on $matched." \
+        "It was the closest thing in your crate to what you asked for." "$matched" "$moves"
+      return 0
+    fi
+
+    if $may_search; then
+      moves=$(jq -nc --arg q "$request" '[{cmd:"search",arg:$q}]')
+      emit_plan heuristic "Digging for that." \
+        "Nothing in the crate matched, so I went looking for it." "$request" "$moves"
+      return 0
+    fi
+
+    emit_plan heuristic "" "Nothing in the crate matched that, and I'm not allowed to go looking." "" '[]'
+    return 0
+  fi
+
+  # A handoff mid-playlist is not a decision. Let the record play out.
+  if [[ $reason == "handoff" ]] && ((now_total > 0 && now_index < now_total)); then
+    emit_plan heuristic "" "The playlist still has tracks left, so I left it alone." "$now_playlist" '[]'
+    return 0
+  fi
+
+  if $may_load && next_playlist=$(pick_playlist "$now_playlist"); then
+    moves=$(jq -nc --arg p "$next_playlist" '[{cmd:"load",arg:$p},{cmd:"shuffle",arg:"on"},{cmd:"play"}]')
+    emit_plan heuristic "$next_playlist, then." \
+      "It reads closest to the $part_of_day, and it isn't what just finished." "$next_playlist" "$moves"
+    return 0
+  fi
+
+  if $may_search; then
+    local query="$part_of_day ${vibe:-instrumental} mix"
+    moves=$(jq -nc --arg q "$query" '[{cmd:"search",arg:$q}]')
+    emit_plan heuristic "Finding something for the $part_of_day." \
+      "Your crate is empty, so I went looking." "$query" "$moves"
+    return 0
+  fi
+
+  emit_plan heuristic "" "No playlists to reach for, and no permission to go looking." "" '[]'
+}
+
+# ------------------------------------------------------------------- the call
+
+plan=$(ask_agent)
+
+if [[ -n ${plan:-} ]]; then
+  moves=$(sanitize_plan <<<"$plan")
+  if [[ -n $moves ]] && jq -e 'type == "array"' <<<"$moves" >/dev/null 2>&1; then
+    move_count=$(jq 'length' <<<"$moves")
+    proposed=$(jq '(.moves // []) | length' <<<"$plan")
+
+    # An agent that deliberately left the deck alone gets its words shown. An
+    # agent whose every move was thrown out by the sanitizer has not made a
+    # call at all, so the rule-based DJ gets to put a record on instead.
+    if ((move_count > 0)) || ((proposed == 0)); then
+      emit_plan agent \
+        "$(jq -r '.say // ""' <<<"$plan")" \
+        "$(jq -r '.reason // ""' <<<"$plan")" \
+        "$(jq -r '.playing // ""' <<<"$plan")" \
+        "$moves"
+      exit 0
+    fi
+  fi
+fi
+
+heuristic_plan

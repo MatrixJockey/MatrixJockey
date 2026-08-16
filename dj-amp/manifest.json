@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "id": "matrixjockey.dj-amp",
+  "name": "DJ Amp",
+  "version": "1.0.0",
+  "author": "MatrixJockey",
+  "license": "MIT",
+  "description": "An AI agent DJ that runs cliamp for you: it reads the deck, picks the next record before the current one ends, and takes requests in plain English.",
+  "kinds": ["service", "bar-widget"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "DJ Amp",
+    "description": "Now playing from cliamp, a live spectrum analyzer, and an AI DJ that mixes the next track and takes requests.",
+    "category": "Media",
+    "aliases": ["dj", "dj-amp", "cliamp"],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "autopilot": true,
+      "vibe": "",
+      "crate": "Playlists + search",
+      "agent": "auto",
+      "handoffSeconds": 25,
+      "pollMs": 1000,
+      "announce": true,
+      "showSpectrum": true,
+      "spectrumFps": 30,
+      "maxLabelWidth": 200
+    },
+    "schema": [
+      {
+        "key": "autopilot",
+        "type": "boolean",
+        "label": "Autopilot",
+        "defaultValue": true,
+        "description": "Let the DJ pick the next record on its own as a track runs out, instead of only answering requests."
+      },
+      {
+        "key": "vibe",
+        "type": "string",
+        "label": "Standing brief",
+        "defaultValue": "",
+        "description": "What the DJ should aim for when you haven't asked for anything, e.g. \"instrumental while I'm working, louder after 9pm\"."
+      },
+      {
+        "key": "crate",
+        "type": "enum",
+        "label": "How far the DJ may reach",
+        "options": ["Playlists", "Playlists + search", "Search only"],
+        "defaultValue": "Playlists + search",
+        "description": "Playlists keeps it to the playlists you already have. Adding search lets the DJ pull tracks off the network through cliamp's search."
+      },
+      {
+        "key": "agent",
+        "type": "enum",
+        "label": "Agent",
+        "options": ["auto", "claude", "codex", "opencode", "gemini", "pi", "crush", "copilot", "grok", "omp", "off"],
+        "defaultValue": "auto",
+        "description": "Which coding agent CLI does the thinking. \"auto\" follows `omarchy default agent`; \"off\" runs the built-in rule-based DJ instead."
+      },
+      {
+        "key": "handoffSeconds",
+        "type": "integer",
+        "label": "Cue the next record (seconds before the end)",
+        "min": 0,
+        "max": 120,
+        "step": 5,
+        "defaultValue": 25
+      },
+      {
+        "key": "pollMs",
+        "type": "integer",
+        "label": "Deck poll interval (ms)",
+        "min": 250,
+        "max": 10000,
+        "step": 250,
+        "defaultValue": 1000
+      },
+      {
+        "key": "announce",
+        "type": "boolean",
+        "label": "Announce the DJ's calls",
+        "defaultValue": true,
+        "description": "Send a desktop notification whenever the DJ changes what's playing."
+      },
+      {
+        "key": "showSpectrum",
+        "type": "boolean",
+        "label": "Spectrum analyzer",
+        "defaultValue": true
+      },
+      {
+        "key": "spectrumFps",
+        "type": "integer",
+        "label": "Spectrum frame rate",
+        "min": 1,
+        "max": 60,
+        "step": 5,
+        "defaultValue": 30
+      },
+      {
+        "key": "maxLabelWidth",
+        "type": "integer",
+        "label": "Bar label width (px)",
+        "min": 0,
+        "max": 600,
+        "step": 20,
+        "defaultValue": 200
+      }
+    ]
+  }
+}

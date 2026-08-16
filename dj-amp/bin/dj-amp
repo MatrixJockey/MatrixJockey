@@ -1,0 +1,124 @@
+#!/bin/bash
+
+# Talk to the DJ from a terminal or a Hyprland keybind.
+#
+# This is a thin wrapper over the IPC targets the plugin registers on the
+# running omarchy-shell, so it works the same from a shell, a script, or a
+# `bind = SUPER, M, exec, dj-amp mix` line in hyprland.conf. It does not start
+# the shell, and it deliberately does not talk to cliamp directly — going
+# through the booth is what keeps the panel, the notifications, and the set
+# list in step with whatever you just did.
+
+set -uo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: dj-amp <command> [args]
+
+  dj-amp                       what's on the deck and what the DJ last said
+  dj-amp request "<text>"      ask the DJ for something, in your own words
+  dj-amp mix                   have the DJ pick the next record right now
+  dj-amp autopilot [on|off]    let the DJ mix on its own, or stop it
+  dj-amp skip | back | play    hands on the deck; the DJ stays out of it
+  dj-amp panel [toggle|open|close]
+
+Requires a running omarchy-shell with the DJ Amp plugin enabled.
+USAGE
+}
+
+shell_call() {
+  local target="$1"
+  shift
+  if ! command -v omarchy-shell >/dev/null 2>&1; then
+    echo "dj-amp: omarchy-shell not found" >&2
+    exit 1
+  fi
+  omarchy-shell "$target" "$@"
+}
+
+status() {
+  local json
+  json=$(shell_call dj-amp status 2>/dev/null)
+
+  if [[ -z $json ]] || ! command -v jq >/dev/null 2>&1; then
+    printf '%s\n' "${json:-dj-amp: no answer from the shell}"
+    return
+  fi
+
+  jq -r '
+    if .installed == false then "cliamp is not installed."
+    elif .live == false then "cliamp is not running."
+    else
+      (if .nowPlaying == "" then "Nothing on the deck." else .nowPlaying end)
+      + "  [" + .state + "]"
+      + (if .autopilot then "  · autopilot on" else "" end)
+      + (if .thinking then "  · the DJ is thinking" else "" end)
+      + (if .say != "" then "\n\"" + .say + "\"" else "" end)
+      + (if .reason != "" then "\n" + .reason else "" end)
+    end
+  ' <<<"$json"
+}
+
+case "${1:-status}" in
+status | "")
+  status
+  ;;
+request)
+  shift
+  (($# > 0)) || {
+    echo "dj-amp: request needs something to ask for" >&2
+    exit 1
+  }
+  shell_call dj-amp request "$*"
+  ;;
+mix)
+  shell_call dj-amp mix
+  ;;
+autopilot)
+  case "${2:-}" in
+  on) shell_call dj-amp autopilot true ;;
+  off) shell_call dj-amp autopilot false ;;
+  "")
+    # No argument means "tell me", and the status call is the only thing that
+    # knows. Flipping it on a bare `dj-amp autopilot` would be a surprise.
+    shell_call dj-amp status 2>/dev/null | jq -r 'if .autopilot then "on" else "off" end' 2>/dev/null ||
+      echo "unknown"
+    ;;
+  *)
+    echo "dj-amp: autopilot takes on or off" >&2
+    exit 1
+    ;;
+  esac
+  ;;
+skip | next)
+  shell_call dj-amp skip
+  ;;
+back | prev)
+  shell_call dj-amp back
+  ;;
+play | pause | toggle)
+  shell_call dj-amp playPause
+  ;;
+panel)
+  # Through the bar rather than a per-widget IPC target: a bar widget exists
+  # once per monitor, and the bar is what knows which copy the focused screen
+  # is looking at.
+  case "${2:-toggle}" in
+  open) shell_call shell summon matrixjockey.dj-amp '{}' ;;
+  close) shell_call shell hide matrixjockey.dj-amp ;;
+  toggle) shell_call shell toggle matrixjockey.dj-amp '{}' ;;
+  *)
+    echo "dj-amp: panel takes toggle, open, or close" >&2
+    exit 1
+    ;;
+  esac
+  ;;
+-h | --help | help)
+  usage
+  ;;
+*)
+  echo "dj-amp: unknown command '$1'" >&2
+  usage >&2
+  exit 1
+  ;;
+esac
