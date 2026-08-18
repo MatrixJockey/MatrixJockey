@@ -1,16 +1,20 @@
-# Kire Howard
+<img src="https://raw.githubusercontent.com/MatrixJockey/MatrixJockey/main/assets/header.svg" alt="Kire Howard — AI-agent security, runtime governance, prompt-injection defense" width="100%" />
 
-**Building AI-agent security tooling.** Chicago.
+I work on runtime defense for AI agent systems — prompt-injection detection, policy
+enforcement at the tool-call boundary, and governance for multi-agent meshes.
 
-I work on runtime defense for AI agent systems — prompt-injection detection,
-policy enforcement at the tool-call boundary, and governance for multi-agent
-meshes. Mostly Python and Rust.
+### Current work
 
-Current focus is **[Auren](https://www.mansalab.com/)**, an AI-agent defense
-platform in pre-GA development: a Rust capture layer, a Python analysis
-service, and a browser console for operators. The code is private while it's
-in beta.
+**[Auren](https://www.mansalab.com/)** — an AI-agent defense platform, in pre-GA development.
 
-## Connect
+| Layer | What it does |
+| :-- | :-- |
+| **Capture** | Rust engine with eBPF packet and syscall inspection |
+| **Analysis** | Python service — agent trust scoring, injection detection, mesh governance |
+| **Console** | Browser operator surface — agent roster, threat feed, evidence export |
 
-[LinkedIn](https://linkedin.com/in/kirednel-howard/)
+The code is private while it's in beta.
+
+### Elsewhere
+
+[LinkedIn](https://linkedin.com/in/kirednel-howard/) · [mansalab.com](https://www.mansalab.com/)
