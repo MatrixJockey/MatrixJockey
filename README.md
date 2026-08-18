@@ -9,7 +9,7 @@ enforcement at the tool-call boundary, and governance for multi-agent meshes.
 
 | Layer | What it does |
 | :-- | :-- |
-| **Capture** | Rust engine with eBPF packet and syscall inspection |
+| **Capture** | Rust engine — eBPF packet capture, egress and kernel probes |
 | **Analysis** | Python service — agent trust scoring, injection detection, mesh governance |
 | **Console** | Browser operator surface — agent roster, threat feed, evidence export |
 
