@@ -40,9 +40,10 @@
 
     <rect x="56" y="106" width="620" height="2" fill="url(#rule)"/>
 
-    <text x="56" y="140" fill="#d4af37" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" letter-spacing="1.5">AI-agent security · runtime governance · prompt-injection defense</text>
+    <text x="56" y="140" fill="#d4af37" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1.2">AI-agent security · runtime governance · prompt-injection defense</text>
 
-    <text x="56" y="174" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" letter-spacing="1">Python · Rust · eBPF        Chicago, IL</text>
+    <text x="56" y="174" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" letter-spacing="1">Python · Rust · eBPF</text>
+    <text x="676" y="174" text-anchor="end" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" letter-spacing="1">Chicago, IL</text>
 
     <!-- right-hand mark: concentric guard rings -->
     <g transform="translate(872,110)" fill="none" stroke="#d4af37">
