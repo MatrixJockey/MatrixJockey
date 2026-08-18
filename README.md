@@ -7,12 +7,6 @@ enforcement at the tool-call boundary, and governance for multi-agent meshes.
 
 **[Auren](https://www.mansalab.com/)** — an AI-agent defense platform, in pre-GA development.
 
-| Layer | What it does |
-| :-- | :-- |
-| **Capture** | Rust engine — eBPF packet capture, egress and kernel probes |
-| **Analysis** | Python service — agent trust scoring, injection detection, mesh governance |
-| **Console** | Browser operator surface — agent roster, threat feed, evidence export |
-
 The code is private while it's in beta.
 
 ### Elsewhere
