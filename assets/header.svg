@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="220" viewBox="0 0 1000 220" role="img" aria-label="Kire Howard — AI-agent security, runtime governance, Chicago">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="55%" stop-color="#0b0f14"/>
+      <stop offset="100%" stop-color="#11161d"/>
+    </linearGradient>
+    <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#d4af37" stop-opacity="0.9"/>
+      <stop offset="72%" stop-color="#d4af37" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="sweep" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4af37" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#d4af37" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#d4af37" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0 H0 V28" fill="none" stroke="#8b949e" stroke-opacity="0.09" stroke-width="1"/>
+    </pattern>
+    <clipPath id="card">
+      <rect x="0" y="0" width="1000" height="220" rx="14"/>
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#card)">
+    <rect width="1000" height="220" fill="url(#bg)"/>
+    <rect width="1000" height="220" fill="url(#grid)"/>
+
+    <!-- slow scan sweep; degrades to invisible if SMIL is unsupported -->
+    <rect x="-300" y="0" width="300" height="220" fill="url(#sweep)">
+      <animate attributeName="x" from="-300" to="1000" dur="9s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- left accent -->
+    <rect x="0" y="0" width="4" height="220" fill="#d4af37" opacity="0.85"/>
+
+    <text x="56" y="86" fill="#e6edf3" font-family="ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="46" font-weight="700" letter-spacing="6">KIRE HOWARD</text>
+
+    <rect x="56" y="106" width="620" height="2" fill="url(#rule)"/>
+
+    <text x="56" y="140" fill="#d4af37" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" letter-spacing="1.5">AI-agent security · runtime governance · prompt-injection defense</text>
+
+    <text x="56" y="174" fill="#8b949e" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" letter-spacing="1">Python · Rust · eBPF        Chicago, IL</text>
+
+    <!-- right-hand mark: concentric guard rings -->
+    <g transform="translate(872,110)" fill="none" stroke="#d4af37">
+      <circle r="58" stroke-opacity="0.14" stroke-width="1"/>
+      <circle r="42" stroke-opacity="0.28" stroke-width="1"/>
+      <circle r="26" stroke-opacity="0.5" stroke-width="1.5"/>
+      <circle r="6" fill="#d4af37" stroke="none" opacity="0.9"/>
+      <path d="M0 -58 A58 58 0 0 1 50 -29" stroke="#d4af37" stroke-opacity="0.85" stroke-width="2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+</svg>
