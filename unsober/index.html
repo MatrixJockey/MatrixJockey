@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Mirrors the policy in /_headers. Nothing inline, nothing third-party. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#FBF4E6">
+  <title>Unsober — the party card game</title>
+  <meta name="description" content="Unsober is a party card game for adults. Draw a card, do what it says, pass the deck. Printed in the USA and shipped straight to your door.">
+  <meta property="og:title" content="Unsober — the party card game">
+  <meta property="og:description" content="Draw a card. Do what it says. Pass the deck.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <a class="nav-logo" href="#top" aria-label="Unsober, back to top">Unsober</a>
+    <nav aria-label="Sections">
+      <a href="#play">Play</a>
+      <a href="#buy">The box</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-small" href="#buy" data-checkout>Buy</a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">A party card game · 21+</p>
+        <h1 class="wordmark" data-text="Unsober">Unsober</h1>
+        <p class="lede">Draw a card. Do what it says. Pass the deck.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#buy" data-checkout>Get the deck <span data-price></span></a>
+          <a class="btn btn-ghost" href="#play">How it works</a>
+        </div>
+      </div>
+
+      <div class="stage" id="stage">
+        <div class="world" id="world">
+          <div class="pile" id="pile" role="button" tabindex="0" aria-label="Draw a card from the deck"></div>
+        </div>
+        <p class="hint" id="hint" aria-hidden="true">Tap the deck</p>
+        <p class="sr-only" id="live" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="play" id="play">
+      <h2 class="reveal">Three steps. Zero setup.</h2>
+      <ol class="steps">
+        <li class="step reveal" data-tilt data-tone="pink">
+          <span class="step-num" aria-hidden="true">1</span>
+          <h3>Draw</h3>
+          <p>Shuffle, drop the deck in the middle, and take the top card.</p>
+        </li>
+        <li class="step reveal" data-tilt data-tone="lime">
+          <span class="step-num" aria-hidden="true">2</span>
+          <h3>Do it</h3>
+          <p>Read it out loud and do what it says. Or sip instead. Your call.</p>
+        </li>
+        <li class="step reveal" data-tilt data-tone="blue">
+          <span class="step-num" aria-hidden="true">3</span>
+          <h3>Pass</h3>
+          <p>Hand the deck left. Keep going until the cards or the snacks run out.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="buy" id="buy">
+      <div class="box-scene reveal" id="boxScene" role="img" aria-label="The Unsober deck box. Drag to spin it.">
+        <div class="box" id="box">
+          <div class="box-face box-front"><span class="wordmark wordmark-box" data-text="Unsober">Unsober</span><small>The party card game</small></div>
+          <div class="box-face box-back"><p>Draw a card.<br>Do what it says.<br>Pass the deck.</p><small>21+ · Play responsibly</small></div>
+          <div class="box-face box-right"><span>Unsober</span></div>
+          <div class="box-face box-left"><span>Unsober</span></div>
+          <div class="box-face box-top"></div>
+          <div class="box-face box-bottom"></div>
+        </div>
+        <p class="hint hint-static" aria-hidden="true">Drag to spin</p>
+      </div>
+
+      <div class="buy-panel reveal">
+        <h2>One box. One good night.</h2>
+        <ul class="contents" id="contents"></ul>
+        <p class="price" id="price"></p>
+        <a class="btn btn-primary btn-large" href="#buy" id="buyButton" data-checkout data-main>Buy Unsober</a>
+        <p class="fine" id="buyNote">Printed in the USA and shipped straight to your door. Payment is handled by our checkout partner, so your card details never touch this site.</p>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <h2 class="reveal">Questions</h2>
+      <div class="faq-list reveal" id="faqList"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="nav-logo">Unsober</span>
+    <p>For adults 21+. Water counts as a drink. Never drink and drive.</p>
+    <p class="fine">© <span id="year">2026</span> Unsober. All rights reserved. <a id="contact" hidden>Contact</a></p>
+  </footer>
+
+  <noscript><p class="noscript">This page is nicer with JavaScript on, but everything you need is right here.</p></noscript>
+</body>
+</html>
