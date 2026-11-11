@@ -14,8 +14,8 @@ export const config = {
     'thegamecrafter.com',
   ],
 
-  // PLACEHOLDER - set the real price, or '' to hide it.
-  price: '$24.99',
+  // Price is not set yet. Leave '' to hide it everywhere, or e.g. '$24.99'.
+  price: '',
 
   // Shown as a "Contact" link in the footer when set.
   contactEmail: '',
@@ -49,7 +49,7 @@ export const config = {
 
   // PLACEHOLDER answers - check them against your printer and policies.
   faq: [
-    { q: 'How does shipping work?', a: 'Every deck is printed in the USA and mailed straight to you. You get a tracking link by email as soon as it ships.' },
+    { q: 'How does shipping work?', a: 'Every deck is printed and mailed straight to you. You get a tracking link by email as soon as it ships.' },
     { q: 'Who is it for?', a: 'Adults 21 and over. Three to ten players works best, and nobody has to drink alcohol to play. Water, soda, or a silly forfeit all work.' },
     { q: 'Is checkout safe?', a: 'Yes. Payment happens on our checkout partner\'s secure page. This site never sees or stores your card details.' },
     { q: 'What if my deck arrives damaged?', a: 'Send us a photo and we will replace it.' },
